@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pair_Programming_Console_Game
@@ -39,6 +40,9 @@ namespace Pair_Programming_Console_Game
             {"8 of Spades", 8},
             {"9 of Spades", 9},
             {"10 of Spades", 10},
+            {"Jack of Spades", 10},
+            {"Queen of Spades", 10},
+            {"King of Spades", 10},
 
             {"Ace of Clubs", 11},
             {"1 of Clubs", 1},
@@ -51,6 +55,9 @@ namespace Pair_Programming_Console_Game
             {"8 of Clubs", 8},
             {"9 of Clubs", 9},
             {"10 of Clubs", 10},
+            {"Jack of Clubs", 10},
+            {"Queen of Clubs", 10},
+            {"King of Clubs", 10},
 
             {"Ace of Hearts", 11},
             {"1 of Hearts", 1},
@@ -63,6 +70,10 @@ namespace Pair_Programming_Console_Game
             {"8 of Hearts", 8},
             {"9 of Hearts", 9},
             {"10 of Hearts", 10},
+            {"Jack of Hearts", 10},
+            {"Queen of Hearts", 10},
+            {"King of Hearts", 10},
+
 
             {"Ace of Diamonds", 11},
             {"1 of Diamonds", 1},
@@ -74,7 +85,10 @@ namespace Pair_Programming_Console_Game
             {"7 of Diamonds", 7},
             {"8 of Diamonds", 8},
             {"9 of Diamonds", 9},
-            {"10 of Diamonds", 10}
+            {"10 of Diamonds", 10},
+            {"Jack of Diamonds", 10},
+            {"Queen of Diamonds", 10},
+            {"King of Diamonds", 10}
         };
 
         public void Run()
@@ -87,7 +101,7 @@ namespace Pair_Programming_Console_Game
             Console.Clear();
             Console.WriteLine
             (
-                "Jason's BlackJack Game\n" +
+                "Welcome to Jason's BlackJack Game\n" +
                 "Enter the option below to get started!\n" +
                     "1. Deal me in!\n" +
                     "2. Nah maybe next time..\n"
@@ -124,9 +138,12 @@ namespace Pair_Programming_Console_Game
             _playerName = Console.ReadLine();
             Console.Clear();
             Console.WriteLine($"Thanks {_playerName}!!!!\n" +
+                              $"\n" +
                               "How many dollars worth of chips would you like to buy?\n" +
+                              "\n" +
                               "Max amount is $1000\n" +
-                              "In even dollar amounts.");
+                              "\n" +
+                              "In even dollar amounts.\n");
             _playerCash = int.Parse(Console.ReadLine());
             if (_playerCash.GetType() != typeof(int))
             {
@@ -139,8 +156,10 @@ namespace Pair_Programming_Console_Game
             else if (_playerCash > 1000)
             {
                 Console.WriteLine($"Sorry {_playerName}!\n" +
+                                  $"\n" +
                                   $"You cannot purchase more than $1000 worth of chips.\n" +
-                                  $"We are a small humble operation here...");
+                                  $"\n" +
+                                  $"We are a small humble operation here...\n");
             }
             else
             {
@@ -148,16 +167,28 @@ namespace Pair_Programming_Console_Game
                 _playerCash = 0;
                 Console.Clear();
                 Console.WriteLine($"OK {_playerName} you now have ${_playerChips} in chips.\n" +
+                                  $"\n" +
                                   $"Please press any key to continue.");
                 Console.ReadKey();
                 PlayGame();
             }
         }
 
-        private void PlayGame()
+        private void ResetCount()
         {
             playerTotal = 0;
             dealerTotal = 0;
+            dealerDownCard = 0;
+            dealerUpCard = 0;
+            playerCard1 = 0;
+            playerCard2 = 0;
+            _betAmount = 0;
+            _placedBet = 0;
+        }
+
+        private void PlayGame()
+        {
+            ResetCount();
             Console.Clear();
             if (_playerChips <= 0)
             {
@@ -165,32 +196,30 @@ namespace Pair_Programming_Console_Game
             }
             else
             {
-                Console.WriteLine($"{_playerName} please your bet!\n" +
-                                  $"You have ${_playerChips}\n" +
-                                  "Maximum bet is $100.\n" +
-                                  "Minimum bet is $10.");
-                _betAmount = int.Parse(Console.ReadLine());
-                if (_betAmount.GetType() != typeof(int))
+                try
                 {
-                    Console.Clear();
-                    Console.WriteLine("Please enter a bet between $10 and $100.");
-                }
-                else if (_betAmount < 10)
-                {
-                    Console.Clear();
-                    Console.WriteLine("You must purchase at least $10.");
-                }
-                else if (_betAmount > 100)
-                {
-                    Console.Clear();
-                    Console.WriteLine($"Sorry friend {_playerName}!\n" +
-                                      "The Maximum bet amount per hand is $100.\n" +
-                                      "We are a small humble operation here...");
-                }
-                else
-                {
+                    Console.WriteLine($"{_playerName} please place your bet!\n" +
+                                      $"\n" +
+                                      $"You have ${_playerChips} in chips.\n" +
+                                      $"\n" +
+                                      "Max bet is $100 and the  Min is $10.\n");
+                    _betAmount = int.Parse(Console.ReadLine());
                     _placedBet = _betAmount;
+                    _betAmount = 0;
                     DealCards();
+                }
+                catch (Exception)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Please ensure you are entering a whole number\n" +
+                                      "\n" +
+                                      "between 100 and 1000. Your response may not be blank\n" +
+                                      "\n" +
+                                      "or contain any non-numeric values.\n" +
+                                      "\n" +
+                                      "Please press any key to continue.");
+                    Console.ReadKey();
+                    PlayGame();
                 }
             }
         }
@@ -198,6 +227,9 @@ namespace Pair_Programming_Console_Game
         private void DealCards()
         {
             Console.Clear();
+            Console.WriteLine("Dealing cards...\n" +
+                              "\n");
+            Thread.Sleep(2500);
 
             var rngDealer = new Random();
             for (var j = 0; j < 2; j++)
@@ -220,11 +252,6 @@ namespace Pair_Programming_Console_Game
             var rngPlayer = new Random();
             for (var i = 0; i < 2; i++)
             {
-                /*var index = rngPlayer.Next(_deckOfCards.Count);
-                KeyValuePair<string, int> playerCard = _deckOfCards.ElementAt(index);
-                playerHand.Add(playerCard.ToString());
-                playerTotal = playerTotal + playerCard.Value;*/
-
                 var index = rngPlayer.Next(_deckOfCards.Count);
                 KeyValuePair<string, int> card = _deckOfCards.ElementAt(index);
                 dealerHand.Add(card.ToString());
@@ -238,20 +265,21 @@ namespace Pair_Programming_Console_Game
                     playerCard2 = card.Value;
                     playerTotal = playerCard1 + playerCard2;
                 }
-
-
             }
 
             if (playerTotal == 21)
             {
-                Console.WriteLine("Black Jack!!! well done friend.\n");
-                Console.WriteLine("Please press any key to continue");
+                Console.WriteLine("Black Jack!!! well done friend.\n" +
+                                  "\n");
+                Console.WriteLine("Please press any key to continue" +
+                                  "\n");
                 Console.ReadKey();
                 StartMenu();
             }
             else if (dealerTotal == 21)
             {
-                Console.WriteLine("Ohh so sorry friend the house wins... another round?\n");
+                Console.WriteLine("Ohh so sorry friend the house wins... another round?\n" +
+                                  "\n");
                 Console.WriteLine("Please press any key to continue");
                 Console.ReadKey();
                 StartMenu();
@@ -265,19 +293,25 @@ namespace Pair_Programming_Console_Game
 
         private void DealAnotherCardForDealer()
         {
-            if (dealerTotal <= 15)
+            if (dealerTotal >= 17 && dealerTotal < 21)
+            {
+                DealAnotherCardForPlayer();
+            }
+            else if (dealerTotal <= 15)
             {
                 var rngDealAnotherCardDealer = new Random();
                 var index = rngDealAnotherCardDealer.Next(_deckOfCards.Count);
                 KeyValuePair<string, int> dealerCard = _deckOfCards.ElementAt(index);
-                // checking for ace if 11 will case bust ace value is changed to 1
-                // Bad logic here. Need to fix 
+
                 if (dealerCard.Value == 11 && (dealerTotal + 11) > 21)
                 {
-                    dealerTotal = dealerTotal + 1;
+                    dealerTotal += 1;
+                    DealAnotherCardForPlayer();
                 }
                 else
                 {
+                    dealerTotal += dealerCard.Value;
+                    BustChecker();
                     DealAnotherCardForPlayer();
                 }
             }
@@ -288,90 +322,80 @@ namespace Pair_Programming_Console_Game
             var rngDealAnotherCardPlayer = new Random();
             var index = rngDealAnotherCardPlayer.Next(_deckOfCards.Count);
             KeyValuePair<string, int> playerCard = _deckOfCards.ElementAt(index);
-            // checking for ace if 11 will case bust ace value is changed to 1
             if (playerCard.Value == 11 && (playerTotal + 11) > 21)
             {
-                playerTotal = playerTotal + 1;
+                playerTotal += 1;
             }
             else
             {
-                playerTotal = playerTotal + playerCard.Value;
+                playerTotal += playerCard.Value;
+                BustChecker();
             }
-
-            BustChecker();
         }
-
-
 
         private void BustChecker()
         {
             if (playerTotal > 21)
             {
-                Console.WriteLine($"You have {playerTotal}... Sorry friend that is a bust!\n" +
-                                  $"Press any key to continue");
-                playerTotal = 0;
-                dealerTotal = 0;
-                Console.ReadKey();
                 Console.Clear();
+                Console.WriteLine($"You have {playerTotal}... Sorry friend that is a bust!\n" +
+                                  $"\n" +
+                                  $"Press any key to continue");
+                ResetCount();
+                Console.ReadKey();
                 StartMenu();
             }
             else if (dealerTotal > 21)
             {
-                Console.WriteLine($"The dealer total is {dealerTotal}. Dealer busts..." +
-                                  $"You win!!!.  Well played {_playerName}");
-                playerTotal = 0;
-                dealerTotal = 0;
-                Console.ReadKey();
                 Console.Clear();
+                Console.WriteLine($"The dealer total is {dealerTotal}. Dealer busts...\n" +
+                                  $"\n" +
+                                  $"You win!!!.  Well played {_playerName}");
+                ResetCount();
+                Console.ReadKey();
                 StartMenu();
             }
             else
             {
-                DisplayCardScores();
+                TakeAnotherCard();
             }
         }
 
         private void TakeAnotherCard()
         {
-            Console.Clear();
-            // need to display player and dealer info here again
-            Console.WriteLine($"You have {playerTotal}.\n" +
-                              $"The dealer is showing {dealerUpCard}.\n" +
-                              $"Would you like another card?\n" +
-                              $"Press y for 'yes' or n for 'no'.");
-            var anotherCardResponse = Console.ReadLine().ToLower();
-            switch (anotherCardResponse)
+            try
             {
-                case "y":
-                    {
-                        DealAnotherCardForDealer();
-                        DealAnotherCardForPlayer();
-                    }
-                    break;
-                case "n":
-                    {
-                        WhoWonHand();
-                    }
-                    break;
-                default:
-                    {
-                        Console.Clear();
-                        Console.WriteLine("How embarrassing something went wrong... Please press any key to return to the game menu.");
-                        Console.ReadKey();
-                        StartMenu();
-                    }
-                    break;
-            }
-        }
+                Console.Clear();
+                Console.WriteLine($"{_playerName} you have a total of {playerTotal}.\n" +
+                                  $"\n" +
+                                  $"The dealer is showing {dealerUpCard}.\n" +
+                                  $"\n" +
+                                  $"Would you like another card? Press 1 for 'yes' or 2 for 'no'.\n");
+                var anotherCardResponse = Console.ReadLine();
+               
 
-        private void DisplayCardScores()
-        {
-            Console.Clear();
-            Console.WriteLine($"Your total is {playerTotal}.\n");
-            Console.WriteLine($"The dealer is showing {dealerUpCard}\n");
-            Console.WriteLine("Press any key to continue");
-            Console.ReadKey();
-            TakeAnotherCard();
+                if (anotherCardResponse == "1")
+                {
+                    DealAnotherCardForDealer();
+                    DealAnotherCardForPlayer();
+                }
+                else if (anotherCardResponse == "2")
+                {
+                    WhoWonHand();
+                }
+                else
+                {
+                    Console.WriteLine("Sorry we did not get your response.  Please select 1 or 2. Let's try again!");
+                    Thread.Sleep(2500);
+                    TakeAnotherCard();
+                }
+
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Please choose either 1 or 2.");
+                TakeAnotherCard();
+            }
         }
 
         private void WhoWonHand()
@@ -379,49 +403,44 @@ namespace Pair_Programming_Console_Game
             if (dealerTotal == playerTotal)
             {
                 Console.Clear();
-                Console.WriteLine($"You have {playerTotal} and the dealer has {dealerTotal}... Push\n" +
-                                  $"Press any key to continue.");
-                playerTotal = 0;
-                dealerTotal = 0;
-                Console.ReadKey();
+                Console.WriteLine($"{_playerName} you have {playerTotal} and the dealer has {dealerTotal}... Push");
+                Thread.Sleep(2000);
+                ResetCount();
                 StartMenu();
             }
             else if (dealerTotal > playerTotal)
             {
                 Console.Clear();
-                _playerChips = -_placedBet;
+                _playerChips -= _placedBet;
                 _placedBet = 0;
-                Console.WriteLine($"You have {playerTotal} and the dealer has {dealerTotal}... sorry friend the house wins\n" +
-                                  $"You have ${_playerChips} in chips.\n" +
-                                  $"Press any key to continue.");
-                playerTotal = 0;
-                dealerTotal = 0;
-                Console.ReadKey();
+                Console.WriteLine($"You have {playerTotal} and the dealer has {dealerTotal}... sorry {_playerName} the house wins...\n");
+                Thread.Sleep(2000);
+                ResetCount();
                 StartMenu();
             }
             else if (playerTotal > 21)
             {
                 Console.Clear();
-                _playerChips = -_placedBet;
+                _playerChips -= _placedBet;
                 _placedBet = 0;
-                Console.WriteLine($"You have {playerTotal}... sorry friend that is a bust!\n" +
-                                  $"You have ${_playerChips} in chips.\n" +
-                                  $"Press any key to continue.");
-                playerTotal = 0;
-                dealerTotal = 0;
-                Console.ReadKey();
+                Console.WriteLine($"You have {playerTotal}... sorry {_playerName} that is a bust!");
+                Thread.Sleep(2000);
+                ResetCount();
+                StartMenu();
+            }
+            else if (playerTotal > dealerTotal)
+            {
+                Console.Clear();
+                _playerChips += _placedBet;
+                _placedBet = 0;
+                Console.WriteLine($"{_playerName} you have {playerTotal} and the dealer has {dealerTotal}... well played! You win!");
+                Thread.Sleep(2000);
+                ResetCount();
                 StartMenu();
             }
             else
             {
-                Console.Clear();
-                _playerChips = +_placedBet;
-                _placedBet = 0;
-                Console.WriteLine($"You have {playerTotal} and the dealer has {dealerTotal}... well played! You win!\n" +
-                                  $"Press any key to continue.");
-                playerTotal = 0;
-                dealerTotal = 0;
-                Console.ReadKey();
+                ResetCount();
                 StartMenu();
             }
 
@@ -433,7 +452,9 @@ namespace Pair_Programming_Console_Game
             _playerCash = _playerChips;
             _playerChips = 0;
             Console.WriteLine($"Thank you for playing please Jason's BlackJack!!\n" +
+                              $"\n" +
                               $"Please press any key to end the game.\n" +
+                              $"\n" +
                               $"We cashed you out you cash total is {_playerCash}");
             Console.Clear();
             System.Environment.Exit(0);

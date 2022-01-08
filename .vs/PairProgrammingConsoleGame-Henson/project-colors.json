@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "caff2e45-57bf-499f-9678-5a3ae906cfeb": {
+      "ProjectGuid": "caff2e45-57bf-499f-9678-5a3ae906cfeb",
+      "DisplayName": "PairProgrammingConsoleGame",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
